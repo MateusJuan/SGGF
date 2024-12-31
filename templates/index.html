@@ -3,55 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <title>Curriculo</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <title>SGGF</title>
 </head>
-<body class="scroll-animation">
-    <header>
-        <nav>
-            <div class="perfil_index">
-                <img src="Mateus2.jpg" alt="Perfil" height="50" width="50" class="Perfil">
-            <a href="index.html" ><button><span class="material-symbols-outlined">home</span>Inico</button></a>
-            <a href="experiencias.html"><button><span class="material-symbols-outlined">history_edu</span>Experiencias</button></a>
-            <a href="certificates.html"><button><span class="material-symbols-outlined">workspace_premium</span>Certificados</button></a>
-        </nav> 
-    <br><br><br>
-    <nav>
-<div class="informações"></div>
-        <img src="Mateus2.jpg" alt="Minha Foto" height="300" width="300" class="perfil_index">
-        <br>
-            <p id="idade">Tenho</p>
-            <p>🌱 Atualmente Estou aprendendo as Linguagens:</p>
-             <br>
-                <img loading="lazy" src="https://cdn.worldvectorlogo.com/logos/react-native-1.svg" width="60" height="60" class="Linguagens"/>
-                <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/PHP-logo.svg/1200px-PHP-logo.svg.png" width="80" height="60" class="Linguagens"/>
-             <br>
-            <p>Já possuo Domínio sobre:</p>
-             <br>
-             <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/768px-HTML5_logo_and_wordmark.svg.png" width="65" height="65" class="Linguagens"/>
-             <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/CSS3_logo_and_wordmark.svg/1200px-CSS3_logo_and_wordmark.svg.png" width="55" height="65" class="Linguagens"/>
-             <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Javascript_badge.svg/946px-Javascript_badge.svg.png" width="65" height="65" class="Linguagens"/>
-             <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1869px-Python-logo-notext.svg.png" width="65" height="65" class="Linguagens"/>
-             <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Sql_data_base_with_logo.png" width="140" height="65" class="Linguagens"/>
-             <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/ISO_C%2B%2B_Logo.svg/800px-ISO_C%2B%2B_Logo.svg.png" width="60" height="60" class="Linguagens"/>
-             <br>
-             <p>📫 Você pode entrar em contato Comigo através das minhas redes abaixo:</p>
-                 <a href="https://www.instagram.com/dev_juan.jsx?igsh=MWRzM2t5MHVsMW9xaw==" target="_blank">
-                     <img loading="lazy" src="https://img.shields.io/badge/-Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=white" target="_blank" class="contact">
-                 </a>
-                 <a href="https://www.linkedin.com/in/mateus-juan-09b9b2298?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">
-                     <img loading="lazy" src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" target="_blank" class="contact">
-                 </a>
-                 <br><br><br>
-               <a href="https://github-readme-stats.vercel.app/api/top-langs/?username=MateusJuan&layout=compact&langs_count=7&theme=transparent">
-                 <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=MateusJuan&layout=compact&langs_count=7&theme=transparent"/>
-               </a>
-               <a href="https://github-readme-stats.vercel.app/api?username=MateusJuan&show_icons=true&theme=transparent&include_all_commits=true&count_private=true"><img height="180em" src="https://github-readme-stats.vercel.app/api?username=MateusJuan&show_icons=true&theme=transparent&include_all_commits=true&count_private=true"/></a>
-        </div>
+<body>
+        {% if nome %}
+        <a href="{{ url_for('perfil') }}">
+            <div class="perfil">
+                <li id="nome">{{ nome }}</li>
+            </div>
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}">
+            <div class="perfil">
+                <li id="nome">Login</li>
+                <span class="material-symbols-outlined">account_circle</span>
+            </div>
+        </a>
+        {% endif %}
+    </ul>
 
-           
-<script src="idade.js"></script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <hr>
 </body>
 </html>

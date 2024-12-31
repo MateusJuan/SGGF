@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+
+</head>
+<body>
+    <div>
+        <h1>Login</h1>
+        <form action="{{ url_for('login') }}" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required placeholder="teste123@gmail.com">
+            <br><br>
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" required placeholder="123456789">
+            <br><br>
+            <button type="submit" id="submit">Entrar</button>
+            <br><br>
+            <a href="{{ url_for('criar_conta') }}">Criar Conta</a>
+        </form>
+    </div>
+
+    {% if erro %}
+        <script>
+            mostrarAlertaERedirecionar("{{ erro }}", "{{ url_for('registrar') }}");
+        </script>
+    {% endif %}
+</body>
+</html>
