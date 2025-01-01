@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Primeiro Acesso</title>
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
 </head>
 <body>
     <div>
-        <h1>Login</h1>
+        <h2>BEM-VINDO AO NOSSO SITE!</h2>
         <form action="{{ url_for('login') }}" method="POST">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required placeholder="teste123@gmail.com">
@@ -20,7 +20,7 @@
             <button type="submit" id="submit">Entrar</button>
             <br><br>
             <a href="{{ url_for('criar_conta') }}">Criar Conta</a>
-        </form>
+            </form>
     </div>
 
     {% if erro %}
