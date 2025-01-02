@@ -56,11 +56,11 @@ def criar_conta():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        nome = request.form['nome']
         senha = request.form['senha']
 
         try:
-            response = supabase.table('usuarios').select('id', 'email', 'senha', 'nome').eq('email', email).execute()
+            response = supabase.table('usuarios').select('id', 'nome', 'senha', 'email').eq('nome', nome).execute()
             if response.data:
                 usuario = response.data[0]
                 if check_password_hash(usuario['senha'], senha):
@@ -72,12 +72,11 @@ def login():
                 else:
                     flash("Senha incorreta. Tente novamente.", "error")
             else:
-                flash("Email não encontrado. Verifique e tente novamente.", "error")
+                flash("Nome não encontrado. Verifique e tente novamente.", "error")
         except Exception as e:
             flash(f"Erro ao processar o login: {str(e)}", "error")
 
     return render_template('login.html')
-
 
 @app.route('/logout')
 def logout():

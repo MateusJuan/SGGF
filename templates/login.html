@@ -3,97 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">-->
     <title>login</title>
 
     <style>
         :root{
-    --botao:rgb(32, 32, 32);
-    --texto_principal:rgb(69,67,66);
-    --texto_secundario:rgb(107,84,56);
-    --text_botao:rgb(236,235,233);
-    --texto_neutro_1: rgb(255,255,255);
-    --texto_neutro_2:rgb(0, 0, 0);
-}
+            --botao:rgb(32, 32, 32);
+            --texto_principal:rgb(69,67,66);
+            --texto_secundario:rgb(107,84,56);
+            --text_botao:rgb(236,235,233);
+            --texto_neutro_1: rgb(255,255,255);
+            --texto_neutro_2:rgb(0, 0, 0);
+        }
 
+        body{
+            background:linear-gradient(135deg,#202020,#858585);
+            font-family: 'Times New Roman', Times, serif;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            background-color:var(--fundo_de_tela);
+            color: var(--texto_neutro_2);
+        }
+        div{
+            background-color: rgba(255, 255, 255, 0.9);
+            position: absolute;
+            border-radius: 15px;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%,50%);
+            padding: 80px;
+            text-align: center;
+            width: 250px;
+        }
+        input{
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+            border: none;
+            padding: 5px;
+            outline: none;
+            width: 200px;
+            color:var(--texto_neutro_1);
+        }
+        input::placeholder{
+            color: var(--texto_neutro_1);
+        }
+        #submit{
+            color: var(--text_botao);
+            font-weight: bold;
+            cursor: pointer;
+            background-color: var(--botao);
+            width: 210px;
+            border-radius: 15px;
+            border:none;
+            padding: 5px;
+        }
+        a{
+            text-decoration: none;
+            color: var(--texto_secundario);
+        }
 
-body{
-    background:linear-gradient(135deg,#202020,#858585);
-    font-family: 'Times New Roman', Times, serif;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-    background-color:var(--fundo_de_tela);
-    color: var(--texto_neutro_2);
-}
-div{
-    background-color: rgba(255, 255, 255, 0.9);
-    position: absolute;
-    border-radius: 15px;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%,50%);
-    padding: 80px;
-    text-align: center;
-    width: 250px;
-}
-input{
-    background-color: rgba(0, 0, 0, 0.9);
-    border-radius: 15px;
-    border: none;
-    padding: 5px;
-    outline: none;
-    width: 200px;
-    color:var(--texto_neutro_1);
-}
-input::placeholder{
-    color: var(--texto_neutro_1);
-}
-#submit{
-    color: var(--text_botao);
-    font-weight: bold;
-    cursor: pointer;
-    background-color: var(--botao);
-    width: 210px;
-    border-radius: 15px;
-    border:none;
-    padding: 5px;
-}
-a{
-    text-decoration: none;
-    color: var(--texto_secundario);
-}
-
-.material-symbols-outlined {
-    font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24
-  }
-
-  .voltar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    color:black;
-    padding: 10px;
-}
+        .voltar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            color:black;
+            padding: 10px;
+        }
     </style>
-
 </head>
 <body>
     <div>
         <h2>BEM-VINDO AO NOSSO SITE!</h2>
         <form action="{{ url_for('login') }}" method="POST">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required placeholder="teste123@gmail.com">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required placeholder="Seu Nome">
             <br><br>
             <label for="senha">Senha:</label>
-            <input type="password" id="senha" name="senha" required placeholder="123456789">
+            <input type="password" id="senha" name="senha" required placeholder="Sua Senha">
             <br><br>
             <button type="submit" id="submit">Entrar</button>
             <br><br>
