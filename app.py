@@ -50,9 +50,8 @@ def criar_conta():
         except Exception as e:
             flash(f"Erro ao criar conta: {str(e)}", "error")
             return redirect(url_for('criar_conta'))
-
-    return render_template('login.html')
-
+        
+    return render_template('criarconta.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
