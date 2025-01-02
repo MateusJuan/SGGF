@@ -95,6 +95,8 @@ def home():
     nome = session['nome']
     return render_template('index.html', nome=nome)
 
+@app.route('')
+
 @app.route('/perfil')
 def perfil():
     if 'usuario_id' not in session:
