@@ -11,17 +11,18 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
-# Carregando as variáveis de ambiente para conectar ao Supabase
+# Conexão com Supabase
 url = os.getenv("SUPABASE_URL", "https://htqnxhtlzjcinjjzbosm.supabase.co")
 key = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0cW54aHRsempjaW5qanpib3NtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU3NTA5NTksImV4cCI6MjA1MTMyNjk1OX0.AslApaKGVWrg8lETjxbD-8seA10GbvrRQkxVNjoqDSU")
 supabase: Client = create_client(url, key)
+
 
 @app.before_request
 def verificar_login():
     if 'nome' not in session and request.endpoint not in ['login', 'criar_conta']:
         return redirect(url_for('login'))
 
-##########################################################################################################
+
 @app.route('/criar_conta', methods=['GET', 'POST'])
 def criar_conta():
     if request.method == 'POST':
@@ -34,58 +35,39 @@ def criar_conta():
             flash("As senhas não coincidem.", "error")
             return redirect(url_for('criar_conta'))
 
-        # Verificando se o email já está registrado
         response = supabase.table('usuarios').select('id').eq('email', email).execute()
-        print(f"Resposta da verificação de email: {response}")  # Debugging
-
         if response.data:
             flash("Este email já está registrado.", "error")
             return redirect(url_for('criar_conta'))
 
-        # Gerando o hash da senha
         senha_hash = generate_password_hash(senha)
         data = {'nome': nome, 'email': email, 'senha': senha_hash}
 
         try:
-            # Teste de conexão antes de tentar inserir
-            test_response = supabase.table('usuarios').select('*').execute()
-            print(f"Testando conexão com a tabela 'usuarios': {test_response}")  # Verificando a tabela
-
-            # Tentando inserir o usuário na tabela 'usuarios'
-            response = supabase.table('usuarios').insert([data]).execute()
-            print(f"Resposta da inserção: {response}")  # Depuração
-
-            # Verificando a resposta da inserção
-            if response.status_code == 201 or response.status_code == 200:
-                flash("Conta criada com sucesso!", "success")
-                return redirect(url_for('login'))
-            else:
-                flash(f"Erro ao criar conta: {response.data}", "error")
-                return redirect(url_for('criar_conta'))
+            supabase.table('usuarios').insert([data]).execute()
+            flash("Conta criada com sucesso!", "success")
+            return redirect(url_for('login'))
         except Exception as e:
             flash(f"Erro ao criar conta: {str(e)}", "error")
-            print(f"Erro ao criar conta: {str(e)}")  # Log de erro
             return redirect(url_for('criar_conta'))
 
     return render_template('login.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         senha = request.form['senha']
+
         try:
             response = supabase.table('usuarios').select('id', 'email', 'senha', 'nome').eq('email', email).execute()
-            print(f"Resposta do login: {response}")  # Debugging
-
             if response.data:
                 usuario = response.data[0]
-
                 if check_password_hash(usuario['senha'], senha):
                     session['nome'] = usuario['nome']
                     session['usuario_id'] = usuario['id']
                     session['email'] = usuario['email']
-
                     flash(f"Bem-vindo, {usuario['nome']}!", "success")
                     return redirect(url_for('home'))
                 else:
@@ -93,10 +75,10 @@ def login():
             else:
                 flash("Email não encontrado. Verifique e tente novamente.", "error")
         except Exception as e:
-            print("Erro ao realizar login:", str(e))
-            flash("Ocorreu um erro ao processar seu login. Tente novamente mais tarde.", "error")
+            flash(f"Erro ao processar o login: {str(e)}", "error")
 
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
@@ -104,7 +86,6 @@ def logout():
     flash("Você foi desconectado com sucesso.", "success")
     return redirect(url_for('login'))
 
-###########################################################################################################
 
 @app.route('/')
 def home():
@@ -116,13 +97,39 @@ def home():
 
 @app.route('/perfil')
 def perfil():
-    if 'nome' not in session:
+    if 'usuario_id' not in session:
         return redirect(url_for('login'))
 
-    nome = session['nome']
-    email = session['email']
-    usuario_id = session['usuario_id']
-    return render_template('perfil.html', nome=nome, email=email, id=usuario_id)
+    usuario_id = session.get('usuario_id')
+    nome = session.get('nome', 'Usuário Desconhecido')
+    email = session.get('email', 'Email Desconhecido')
+
+    especialidades = []  # Começa com uma lista vazia
+
+    try:
+        # Consulta para buscar o nome do usuário diretamente na tabela usuarios
+        usuario_response = supabase.table('usuarios').select('nome').eq('id', usuario_id).execute()
+
+        if usuario_response.data:
+            nome_usuario = usuario_response.data[0].get('nome', 'Nome não encontrado.')
+        else:
+            nome_usuario = 'Nome não encontrado.'
+
+        # Consulta para buscar as especialidades na tabela especialidades
+        especialidades_response = supabase.table('especialidades').select('especialidade').eq('usuario_id', usuario_id).execute()
+
+        if especialidades_response.data:
+            especialidades = [item['especialidade'] for item in especialidades_response.data]
+        else:
+            especialidades = []
+
+    except Exception as e:
+        flash(f"Erro ao carregar dados: {str(e)}", "error")
+        nome_usuario = 'Erro ao carregar nome'
+        especialidades = []
+
+    return render_template('perfil.html', nome=nome_usuario, email=email, id=usuario_id, especialidades=especialidades)
+
 
 @app.route('/trocarSenha', methods=['GET', 'POST'])
 def trocarSenha():
@@ -155,8 +162,6 @@ def trocarSenha():
         return redirect(url_for('perfil'))
 
     return render_template('mudar_senha.html')
-
-
 
 
 if __name__ == '__main__':
