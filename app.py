@@ -130,6 +130,30 @@ def diretoria():
 
     return render_template('diretoria.html', nome=nome, membros=membros)
 
+@app.route('/add_especialidade', methods=['GET', 'POST'])
+def add_especialidade():
+    if 'nome' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "warning")
+        return redirect(url_for('login'))
+
+    # Consultando os membros (usuários)
+    membros = supabase.table('usuarios').select('id', 'nome').execute().data
+
+    if request.method == 'POST':
+        membro_id = request.form['membro_id']
+        especialidade = request.form['especialidade']
+        
+        # Inserindo a especialidade na tabela 'especialidades' com o usuario_id
+        supabase.table('especialidades').insert({
+            "usuario_id": membro_id,
+            "especialidade": especialidade
+        }).execute()
+
+        flash(f'Especialidade {especialidade} adicionada ao membro com sucesso!', 'success')
+        return redirect(url_for('add_especialidade'))
+
+    return render_template('add_especialidade.html', membros=membros)
+
 @app.route('/detalhes_usuario/<int:user_id>')
 def detalhes_usuario(user_id):
     if 'nome' not in session:

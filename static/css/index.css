@@ -218,6 +218,37 @@ tr:hover td {
     }
 }
 
+/* Estilos específicos para a página Adicionar Especialidade */
+.form-adicionar-especialidade input,
+.form-adicionar-especialidade select {
+    background-color: rgba(50, 50, 50, 0.7);
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    outline: none;
+    padding: 10px;
+    margin: 5px;
+    color: white;
+}
+.form-adicionar-especialidade input::placeholder,
+.form-adicionar-especialidade select::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: bold;
+}
+.form-adicionar-especialidade button {
+    background-color: #858585;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+.form-adicionar-especialidade button:hover {
+    background-color: #6d6d6d;
+}
+
 /*/////////////////////////////////////////////*/
 
 .voltar {
