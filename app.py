@@ -91,11 +91,18 @@ def logout():
 def home():
     if 'nome' not in session:
         return redirect(url_for('login'))
-
     nome = session['nome']
     return render_template('index.html', nome=nome)
 
-@app.route('')
+@app.route('/diretoria')
+def diretoria():
+    if 'nome' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "warning")
+        return redirect(url_for('login'))
+
+    nome = session['nome']
+    return render_template('diretoria.html', nome=nome)
+
 
 @app.route('/perfil')
 def perfil():
