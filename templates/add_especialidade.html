@@ -10,26 +10,6 @@
     <title>Adicionar Especialidade</title>
 </head>
 <body>
-    <header>
-        <nav class="pesquisar">
-            {% if nome %}
-            <a href="{{ url_for('perfil') }}">
-                <div class="perfil">
-                    <li id="nome">{{ nome }}</li>
-                </div>
-            </a>
-            {% else %}
-            <a href="{{ url_for('login') }}">
-                <div class="perfil">
-                    <li id="nome">Login</li>
-                </div>
-            </a>
-            {% endif %}
-        </nav>
-    </header>
-
-    <hr>
-
     <nav class="menu-lateral">
         <ul>
             <li class="item-menu">
@@ -53,10 +33,14 @@
             </li>
             <li class="item-menu">
                 <a href="{{ url_for('add_especialidade') }}">
-                    <span class="material-symbols-outlined">
-                        preliminary
-                    </span>
+                    <span class="material-symbols-outlined">preliminary</span>
                     <span class="txt-link">Add Especialidade</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="{{ url_for('add_membro') }}">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span class="txt-link">Adicionar Membro</span>
                 </a>
             </li>
         </ul>

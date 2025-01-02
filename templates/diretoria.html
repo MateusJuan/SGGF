@@ -59,11 +59,19 @@
                         <span class="txt-link">Add Especialidade</span>
                 </a>
             </li>
+            <li class="item-menu">
+                <a href="{{ url_for('add_membro') }}">
+                    <span class="material-symbols-outlined">
+                        person_add
+                        </span>
+                        <span class="txt-link">Adicionar Membro</span>
+                </a>
+            </li>
         </ul>
     </nav>
 
     <div class="conteudo-diretoria">
-        <h2>Diretoria</h2>
+        <h2>Membros</h2>
         
         {% if membros %}
             <table>

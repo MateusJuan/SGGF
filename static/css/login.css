@@ -1,75 +1,135 @@
-:root{
-    --botao:rgb(32, 32, 32);
-    --texto_principal:rgb(69,67,66);
-    --texto_secundario:rgb(107,84,56);
-    --text_botao:rgb(236,235,233);
-    --texto_neutro_1: rgb(255,255,255);
-    --texto_neutro_2:rgb(0, 0, 0);
+/* Variáveis de cores */
+:root {
+    --botao: rgb(32, 32, 32);
+    --texto_principal: rgb(69, 67, 66);
+    --texto_secundario: rgb(107, 84, 56);
+    --text_botao: rgb(236, 235, 233);
+    --texto_neutro_1: rgb(255, 255, 255);
+    --texto_neutro_2: rgb(0, 0, 0);
+    --fundo_de_tela: #202020; /* Cor de fundo geral */
 }
 
-
-body{
-    background:linear-gradient(135deg,#202020,#858585);
+/* Body */
+body {
+    background: linear-gradient(135deg, #202020, #858585);
     font-family: 'Times New Roman', Times, serif;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-    background-color:var(--fundo_de_tela);
     color: var(--texto_neutro_2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
-div{
-    background-color: rgba(255, 255, 255, 0.9);
-    position: absolute;
-    border-radius: 15px;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%,50%);
-    padding: 80px;
-    text-align: center;
+
+/* Menu Lateral */
+.menu-lateral {
     width: 250px;
+    background-color: var(--botao);
+    color: var(--texto_neutro_1);
+    position: fixed;
+    height: 100%;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
-input{
-    background-color: rgba(0, 0, 0, 0.9);
+
+.menu-lateral .logo {
+    width: 100%;
+    padding: 20px;
+    display: block;
+    margin-bottom: 30px;
+}
+
+.item-menu {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.item-menu a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--texto_neutro_1);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.item-menu a:hover {
+    background-color: var(--texto_principal);
+}
+
+.item-menu .icon,
+.item-menu .txt-link {
+    margin-left: 10px;
+}
+
+/* Conteúdo Diretoria */
+.conteudo-diretoria {
+    margin-left: 260px;
+    padding: 40px;
+    width: calc(100% - 260px);
+    background-color: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
-    border: none;
-    padding: 5px;
-    outline: none;
-    width: 200px;
-    color:var(--texto_neutro_1);
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
-input::placeholder{
+
+/* Formulário */
+.conteudo-diretoria h2 {
+    font-size: 24px;
+    color: var(--texto_principal);
+    margin-bottom: 20px;
+}
+
+/* Formulário */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 16px;
+    color: var(--texto_principal);
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid var(--texto_neutro_1);
+    border-radius: 5px;
+    font-size: 16px;
     color: var(--texto_neutro_1);
 }
-#submit{
-    color: var(--text_botao);
-    font-weight: bold;
-    cursor: pointer;
-    background-color: var(--botao);
-    width: 210px;
-    border-radius: 15px;
-    border:none;
-    padding: 5px;
-}
-a{
-    text-decoration: none;
-    color: var(--texto_secundario);
+
+.form-group input:focus {
+    border-color: var(--botao);
+    outline: none;
 }
 
-.material-symbols-outlined {
-    font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24
-  }
-
-  .voltar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    color:black;
+.form-group button {
+    width: 100%;
     padding: 10px;
+    background-color: var(--botao);
+    color: var(--text_botao);
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-group button:hover {
+    background-color: var(--texto_principal);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .menu-lateral {
+        width: 200px;
+    }
+
+    .conteudo-diretoria {
+        margin-left: 210px;
+        width: calc(100% - 210px);
+    }
 }

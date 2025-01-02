@@ -22,7 +22,6 @@ def verificar_login():
     if 'nome' not in session and request.endpoint not in ['login', 'criar_conta']:
         return redirect(url_for('login'))
 
-
 @app.route('/criar_conta', methods=['GET', 'POST'])
 def criar_conta():
     if request.method == 'POST':
@@ -184,6 +183,26 @@ def detalhes_usuario(user_id):
 
     return render_template('membro_detalhes.html', nome=nome, membro=usuario)
 
+@app.route('/add_membro', methods=['GET', 'POST'])
+def add_membro():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        senha = request.form['senha']
+
+        senha_hash = generate_password_hash(senha)
+
+        data = {'nome': nome, 'email': email, 'senha': senha_hash}
+
+        try:
+            supabase.table('usuarios').insert([data]).execute()
+            flash(f'Membro {nome} adicionado com sucesso!', 'success')
+            return redirect(url_for('diretoria'))
+        except Exception as e:
+            flash(f"Erro ao adicionar membro: {str(e)}", "error")
+            return redirect(url_for('add_membro'))
+
+    return render_template('add_membro.html')
 
 @app.route('/perfil')
 def perfil():
