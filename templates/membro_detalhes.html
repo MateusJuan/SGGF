@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <title>{{ membro['nome'] }} - Detalhes</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('diretoria') }}">Voltar para a Diretoria</a>
+        </nav>
+    </header>
+
+    <div class="conteudo-membro">
+        <h2>Detalhes de {{ membro['nome'] }}</h2>
+        <ul>
+            <li><strong>ID:</strong> {{ membro['id'] }}</li>
+            <li><strong>Nome:</strong> {{ membro['nome'] }}</li>
+            <li><strong>Email:</strong> {{ membro['email'] }}</li>
+            <li><strong>Cargo:</strong> {{ membro['cargo'] }}</li>
+        </ul>
+
+        <h3>Especialidades:</h3>
+        {% if membro['especialidades'] %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Especialidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for especialidade in membro['especialidades'] %}
+                        <tr>
+                            <td>{{ especialidade }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Este membro não tem especialidades cadastradas.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

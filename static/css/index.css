@@ -93,7 +93,7 @@ ul li.item-meu a .icon >i{
 
 /*///////////////////////////*/
 
-.historia {
+.conteudo-diretoria {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -109,14 +109,44 @@ ul li.item-meu a .icon >i{
     line-height: 1.6;
 }
 
-.historia h1 {
+.conteudo-diretoriah1 {
     font-size: 2em;
     margin-bottom: 20px;
 }
 
-.historia p {
+.conteudo-diretoria p {
     margin-bottom: 20px;
     text-indent: 2em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+    background-color: #f4f4f9;  /* Cor suave para o fundo do cabeçalho */
+    color: #555;  /* Cor do texto do cabeçalho, mais suave */
+    font-weight: bold;  /* Destaque para o texto */
+}
+
+td {
+    color: #666;  /* Cor mais suave para o texto nas células */
+}
+
+tr:hover {
+    background-color: rgba(240, 240, 240, 0.8);  /* Hover suave com um fundo claro */
+}
+
+tr:hover td {
+    color: #333;  /* Cor mais escura para o texto quando o hover ocorre */
 }
 /*//////////////////////////*/
 .opcoes {

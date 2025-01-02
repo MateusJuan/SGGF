@@ -92,7 +92,21 @@ def home():
     if 'nome' not in session:
         return redirect(url_for('login'))
     nome = session['nome']
-    return render_template('index.html', nome=nome)
+    cargo = session.get('cargo')
+
+    if not cargo:
+        try:
+            response = supabase.table('usuarios').select('cargo').eq('nome', nome).execute()
+            if response.data:
+                cargo = response.data[0]['cargo']
+                session['cargo'] = cargo
+            else:
+                cargo = None
+        except Exception as e:
+            flash(f"Erro ao carregar o cargo: {str(e)}", "error")
+            cargo = None
+    
+    return render_template('index.html', nome=nome, cargo=cargo)
 
 @app.route('/diretoria')
 def diretoria():
@@ -101,7 +115,52 @@ def diretoria():
         return redirect(url_for('login'))
 
     nome = session['nome']
-    return render_template('diretoria.html', nome=nome)
+    membros = []
+
+    try:
+        usuarios_response = supabase.table('usuarios').select('id', 'nome').order('nome').execute()
+
+        if usuarios_response.data:
+            membros = usuarios_response.data
+        else:
+            flash("Não há membros registrados.", "info")
+
+    except Exception as e:
+        flash(f"Erro ao carregar membros: {str(e)}", "error")
+        print("Erro ao carregar membros:", str(e))
+
+    return render_template('diretoria.html', nome=nome, membros=membros)
+
+@app.route('/detalhes_usuario/<int:user_id>')
+def detalhes_usuario(user_id):
+    if 'nome' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "warning")
+        return redirect(url_for('login'))
+
+    nome = session['nome']
+    usuario = None
+    especialidades = []
+
+    try:
+        usuario_response = supabase.table('usuarios').select('*').eq('id', user_id).execute()
+
+        if usuario_response.data:
+            usuario = usuario_response.data[0]
+
+            especialidades_response = supabase.table('especialidades').select('especialidade').eq('usuario_id', user_id).execute()
+
+            if especialidades_response.data:
+                especialidades = [item['especialidade'] for item in especialidades_response.data]
+
+            usuario['especialidades'] = especialidades
+        else:
+            flash("Usuário não encontrado.", "info")
+
+    except Exception as e:
+        flash(f"Erro ao carregar detalhes do usuário: {str(e)}", "error")
+        print("Erro ao carregar detalhes do usuário:", str(e))
+
+    return render_template('membro_detalhes.html', nome=nome, membro=usuario)
 
 
 @app.route('/perfil')
@@ -111,12 +170,18 @@ def perfil():
 
     usuario_id = session.get('usuario_id')
     nome = session.get('nome', 'Usuário Desconhecido')
+    cargo = session.get('cargo')
     email = session.get('email', 'Email Desconhecido')
 
     especialidades = []  # Começa com uma lista vazia
 
     try:
-        # Consulta para buscar o nome do usuário diretamente na tabela usuarios
+        if not cargo:
+            response = supabase.table('usuarios').select('cargo').eq('id', usuario_id).execute()
+            if response.data:
+                cargo = response.data[0]['cargo']
+                session['cargo'] = cargo  # Salvando o cargo na sessão
+
         usuario_response = supabase.table('usuarios').select('nome').eq('id', usuario_id).execute()
 
         if usuario_response.data:
@@ -124,7 +189,6 @@ def perfil():
         else:
             nome_usuario = 'Nome não encontrado.'
 
-        # Consulta para buscar as especialidades na tabela especialidades
         especialidades_response = supabase.table('especialidades').select('especialidade').eq('usuario_id', usuario_id).execute()
 
         if especialidades_response.data:
@@ -135,10 +199,10 @@ def perfil():
     except Exception as e:
         flash(f"Erro ao carregar dados: {str(e)}", "error")
         nome_usuario = 'Erro ao carregar nome'
+        cargo = 'Erro ao carregar cargo'
         especialidades = []
 
-    return render_template('perfil.html', nome=nome_usuario, email=email, id=usuario_id, especialidades=especialidades)
-
+    return render_template('perfil.html', nome=nome_usuario, cargo=cargo, email=email, id=usuario_id, especialidades=especialidades)
 
 @app.route('/trocarSenha', methods=['GET', 'POST'])
 def trocarSenha():
