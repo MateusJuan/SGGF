@@ -50,17 +50,21 @@
         <h2>Adicionar Especialidade</h2>
 
         <form method="POST" action="{{ url_for('add_especialidade') }}" class="form-adicionar-especialidade">
-            <label for="membro_id">Membro:</label>
-            <select name="membro_id" id="membro_id" required>
-                {% for membro in membros %}
-                    <option value="{{ membro.id }}">{{ membro.nome }}</option>
-                {% endfor %}
-            </select>
-        
-            <label for="especialidade">Especialidade:</label>
-            <input type="text" id="especialidade" name="especialidade" required>
-        
-            <button type="submit">Adicionar Especialidade</button>
+            <div class="form-group">
+                <label for="membro_id">Membro:</label><br>
+                <select name="membro_id" id="membro_id" required>
+                    {% for membro in membros %}
+                        <option value="{{ membro.id }}">{{ membro.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="especialidade">Especialidade:</label><br>
+                <input type="text" id="especialidade" name="especialidade" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Adicionar Especialidade</button>
+            </div>
         </form>
         
     </div>

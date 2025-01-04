@@ -116,7 +116,7 @@ ul li.item-meu a .icon >i{
     line-height: 1.6;
 }
 
-.conteudo-diretoriah1 {
+.conteudo-diretoria > h1 {
     font-size: 2em;
     margin-bottom: 20px;
 }
@@ -227,7 +227,7 @@ tr:hover td {
 
 /* Estilos específicos para a página Adicionar Especialidade */
 .form-adicionar-especialidade input,
-.form-adicionar-especialidade select {
+.form-adicionar-especialidade select{
     background-color: rgba(50, 50, 50, 0.7);
     border: 1px solid #ccc;
     border-radius: 15px;
@@ -235,6 +235,7 @@ tr:hover td {
     padding: 10px;
     margin: 5px;
     color: white;
+    width: 100%;
 }
 .form-adicionar-especialidade input::placeholder,
 .form-adicionar-especialidade select::placeholder {
@@ -242,9 +243,9 @@ tr:hover td {
     font-weight: bold;
 }
 .form-adicionar-especialidade button {
-    background-color: #858585;
+    background-color:#202020;
     color: white;
-    border: none;
+    border: 1px solid #ccc;
     border-radius: 15px;
     padding: 10px 20px;
     margin-top: 10px;
