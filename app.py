@@ -204,6 +204,30 @@ def add_membro():
 
     return render_template('add_membro.html')
 
+@app.route('/unidade', methods=['GET', 'POST'])
+def unidade():
+    if 'nome' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "warning")
+        return redirect(url_for('login'))
+
+    # Consultando apenas os membros com o cargo de 'conselheiro'
+    membros = supabase.table('usuarios').select('id', 'nome').eq('cargo', 'conselheiro').execute().data
+
+    if request.method == 'POST':
+        nome_unidade = request.form['nome']
+        conselheiro_id = request.form['membro_id']
+
+        # Inserindo a unidade na tabela 'unidade'
+        supabase.table('unidade').insert({
+            "nome_unidade": nome_unidade,
+            "conselheiro": conselheiro_id
+        }).execute()
+
+        flash(f'Unidade {nome_unidade} criada com sucesso!', 'success')
+        return redirect(url_for('unidade'))
+
+    return render_template('unidade.html', membros=membros)
+
 @app.route('/perfil')
 def perfil():
     if 'usuario_id' not in session:
