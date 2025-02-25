@@ -159,29 +159,51 @@ def detalhes_usuario(user_id):
         return redirect(url_for('login'))
 
     nome = session['nome']
-    usuario = None
+    cargo = session.get('cargo')
+    email = session.get('email', 'Email Desconhecido')
+    data_nasc = session.get('data_nasc', 'Não Informado')
     especialidades = []
 
     try:
-        usuario_response = supabase.table('usuarios').select('*').eq('id', user_id).execute()
+        # Carregar o cargo do banco de dados, caso não esteja na sessão
+        if not cargo:
+            response = supabase.table('usuarios').select('cargo').eq('id', user_id).execute()
+            if response.data:
+                cargo = response.data[0]['cargo']
+                session['cargo'] = cargo  # Salvando o cargo na sessão
+
+        # Carregar os dados do usuário
+        usuario_response = supabase.table('usuarios').select('nome', 'data_nasc', 'email').eq('id', user_id).execute()
 
         if usuario_response.data:
             usuario = usuario_response.data[0]
-
-            especialidades_response = supabase.table('especialidades').select('especialidade').eq('usuario_id', user_id).execute()
-
-            if especialidades_response.data:
-                especialidades = [item['especialidade'] for item in especialidades_response.data]
-
-            usuario['especialidades'] = especialidades
+            nome_usuario = usuario.get('nome', 'Nome não encontrado.')
+            data_nasc = usuario.get('data_nasc', 'Não Informado')
+            email = usuario.get('email', 'Email não encontrado.')
         else:
-            flash("Usuário não encontrado.", "info")
+            nome_usuario = 'Nome não encontrado.'
+            data_nasc = 'Não Informado'
+            email = 'Email não encontrado.'
+
+        # Carregar as especialidades
+        especialidades_response = supabase.table('especialidades').select('especialidade').eq('usuario_id', user_id).execute()
+
+        if especialidades_response.data:
+            especialidades = [item['especialidade'] for item in especialidades_response.data]
+
+        # Associar as especialidades ao usuário
+        usuario['especialidades'] = especialidades
 
     except Exception as e:
         flash(f"Erro ao carregar detalhes do usuário: {str(e)}", "error")
-        print("Erro ao carregar detalhes do usuário:", str(e))
+        nome_usuario = 'Erro ao carregar nome'
+        cargo = 'Erro ao carregar cargo'
+        especialidades = []
+        data_nasc = 'Erro ao carregar data de nascimento'
+        email = 'Erro ao carregar email'
 
-    return render_template('membro_detalhes.html', nome=nome, membro=usuario)
+    return render_template('membro_detalhes.html', nome=nome_usuario, cargo=cargo, email=email, id=user_id, especialidades=especialidades, data_nasc=data_nasc)
+
 
 @app.route('/add_membro', methods=['GET', 'POST'])
 def add_membro():
@@ -206,27 +228,8 @@ def add_membro():
 
 @app.route('/unidade', methods=['GET', 'POST'])
 def unidade():
-    if 'nome' not in session:
-        flash("Você precisa estar logado para acessar esta página.", "warning")
-        return redirect(url_for('login'))
+    return render_template('unidade.html')
 
-    # Consultando apenas os membros com o cargo de 'conselheiro'
-    membros = supabase.table('usuarios').select('id', 'nome').eq('cargo', 'conselheiro').execute().data
-
-    if request.method == 'POST':
-        nome_unidade = request.form['nome']
-        conselheiro_id = request.form['membro_id']
-
-        # Inserindo a unidade na tabela 'unidade'
-        supabase.table('unidade').insert({
-            "nome_unidade": nome_unidade,
-            "conselheiro": conselheiro_id
-        }).execute()
-
-        flash(f'Unidade {nome_unidade} criada com sucesso!', 'success')
-        return redirect(url_for('unidade'))
-
-    return render_template('unidade.html', membros=membros)
 
 @app.route('/perfil')
 def perfil():
@@ -237,7 +240,7 @@ def perfil():
     nome = session.get('nome', 'Usuário Desconhecido')
     cargo = session.get('cargo')
     email = session.get('email', 'Email Desconhecido')
-
+    data_nasc = session.get('data_nasc', 'Não Informado')
     especialidades = []  # Começa com uma lista vazia
 
     try:
@@ -247,12 +250,14 @@ def perfil():
                 cargo = response.data[0]['cargo']
                 session['cargo'] = cargo  # Salvando o cargo na sessão
 
-        usuario_response = supabase.table('usuarios').select('nome').eq('id', usuario_id).execute()
+        usuario_response = supabase.table('usuarios').select('nome', 'data_nasc').eq('id', usuario_id).execute()
 
         if usuario_response.data:
             nome_usuario = usuario_response.data[0].get('nome', 'Nome não encontrado.')
+            data_nasc = usuario_response.data[0].get('data_nasc', 'Não Informado')
         else:
             nome_usuario = 'Nome não encontrado.'
+            data_nasc = 'Não Informado'
 
         especialidades_response = supabase.table('especialidades').select('especialidade').eq('usuario_id', usuario_id).execute()
 
@@ -266,8 +271,9 @@ def perfil():
         nome_usuario = 'Erro ao carregar nome'
         cargo = 'Erro ao carregar cargo'
         especialidades = []
+        data_nasc = 'Erro ao carregar data de nascimento'
 
-    return render_template('perfil.html', nome=nome_usuario, cargo=cargo, email=email, id=usuario_id, especialidades=especialidades)
+    return render_template('perfil.html', nome=nome_usuario, cargo=cargo, email=email, id=usuario_id, especialidades=especialidades, data_nasc=data_nasc)
 
 @app.route('/trocarSenha', methods=['GET', 'POST'])
 def trocarSenha():

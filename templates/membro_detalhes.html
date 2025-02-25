@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <title>{{ membro['nome'] }} - Detalhes</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/Logo Desbravadores.png') }}" type="image/x-icon">
+    <title>{{ nome }} - Detalhes</title>
     <style>
         table {
             width: 100%;
@@ -31,19 +32,24 @@
         <nav>
             <a href="{{ url_for('diretoria') }}">Voltar para a Diretoria</a>
         </nav>
+        <br>
     </header>
 
     <div class="conteudo-membro">
-        <h2>Detalhes de {{ membro['nome'] }}</h2>
+        <h2>Detalhes de {{ nome }}</h2>
+        <hr>
         <ul>
-            <li><strong>ID:</strong> {{ membro['id'] }}</li>
-            <li><strong>Nome:</strong> {{ membro['nome'] }}</li>
-            <li><strong>Email:</strong> {{ membro['email'] }}</li>
-            <li><strong>Cargo:</strong> {{ membro['cargo'] }}</li>
+            <li><strong>ID:</strong> {{ id }}</li>
+            <li><strong>Nome:</strong> {{ nome }}</li>
+            <li><strong>Email:</strong> {{ email }}</li>
+            <li><strong>Cargo:</strong> {{ cargo }}</li>
+            <li><strong>Data de Nascimento:</strong> {{ data_nasc }}</li>
         </ul>
+        <br>
+        <hr>
 
         <h3>Especialidades:</h3>
-        {% if membro['especialidades'] %}
+        {% if especialidades %}
             <table>
                 <thead>
                     <tr>
@@ -51,7 +57,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for especialidade in membro['especialidades'] %}
+                    {% for especialidade in especialidades %}
                         <tr>
                             <td>{{ especialidade }}</td>
                         </tr>
@@ -61,6 +67,8 @@
         {% else %}
             <p>Este membro não tem especialidades cadastradas.</p>
         {% endif %}
+        <br>
+        <hr>
     </div>
 </body>
 </html>

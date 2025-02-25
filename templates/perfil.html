@@ -22,18 +22,21 @@
         </a>
     </header>
     <h1>Perfil do Usuário</h1>
+    <hr>
 
     {% if nome %}
         <p><strong>ID:</strong> {{ id }}</p>
         <p><strong>Nome:</strong> {{ nome }}</p>
         <p><strong>Cargo:</strong> {{ cargo }}</p>
         <p><strong>Email:</strong> {{ email }}</p>
+        <p><strong>Aniversário:</strong> {{data_nasc}}</p>
 
         <a href="{{ url_for('trocarSenha') }}">Trocar Senha</a>
 
         <a href="{{ url_for('logout') }}">
             <button id="submit">Sair da Conta</button>
-        </a><br>
+        </a>
+        <hr>
 
         <h2>Especialidades:</h2>
         {% if especialidades %}
@@ -56,6 +59,8 @@
         {% else %}
             <p>Não há especialidades registradas.</p>
         {% endif %}
+        <br>
+        <hr>
     {% endif %}
 
 </body>
