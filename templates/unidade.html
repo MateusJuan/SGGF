@@ -54,10 +54,9 @@
             </li>
         </ul>
     </nav>
-
     <div class="conteudo-diretoria">
         <h2>Criar unidade</h2>
-
+    
         <form action="{{ url_for('unidade') }}" method="POST" class="form-adicionar-especialidade">
             <div class="form-group">
                 <label for="nome">Nome_da_unidade:</label>
@@ -77,5 +76,25 @@
             </div>
         </form>
     </div>
+    <div class="conteudo-diretoria">
+        <h3>Unidades Existentes</h3>
+        <table border="1" class="tabela-unidades">
+            <thead>
+                <tr>
+                    <th>Nome da Unidade</th>
+                    <th>Conselheiro</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for unidade in unidades %}
+                    <tr>
+                        <td>{{ unidade.nome_unidade }}</td>
+                        <td>{{ unidade.conselheiro }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
 </body>
 </html>

@@ -228,7 +228,49 @@ def add_membro():
 
 @app.route('/unidade', methods=['GET', 'POST'])
 def unidade():
-    return render_template('unidade.html')
+    if 'nome' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "warning")
+        return redirect(url_for('login'))
+
+    # Consultando apenas os membros que têm o cargo de "Conselheiro"
+    conselheiros = supabase.table('usuarios').select('id', 'nome').eq('cargo', 'Conselheiro').execute().data
+
+    # Consultando todas as unidades e associando o conselheiro de cada uma
+    unidades = supabase.table('unidade').select('nome_unidade', 'membro_id').execute().data
+    unidades_com_conselheiros = []
+
+    for unidade in unidades:
+        conselheiro = supabase.table('usuarios').select('nome').eq('id', unidade['membro_id']).execute().data
+        if conselheiro:
+            unidades_com_conselheiros.append({
+                'nome_unidade': unidade['nome_unidade'],
+                'conselheiro': conselheiro[0]['nome']
+            })
+
+    if request.method == 'POST':
+        nome_unidade = request.form['nome']
+        membro_id = request.form['membro_id']
+
+        # Verificar se já existe uma unidade com o mesmo conselheiro
+        unidade_existente = supabase.table('unidade').select('*').eq('membro_id', membro_id).execute().data
+
+        if unidade_existente:
+            flash("Este conselheiro já está vinculado a uma unidade!", "warning")
+        else:
+            # Criando a unidade no banco de dados
+            supabase.table('unidade').insert({
+                "nome_unidade": nome_unidade,
+                "membro_id": membro_id
+            }).execute()
+
+            # Atualizando a coluna 'unidade' na tabela usuarios
+            supabase.table('usuarios').update({"unidade": nome_unidade}).eq('id', membro_id).execute()
+
+            flash(f'Unidade "{nome_unidade}" criada com sucesso!', 'success')
+
+        return redirect(url_for('unidade'))
+
+    return render_template('unidade.html', membros=conselheiros, unidades=unidades_com_conselheiros)
 
 
 @app.route('/perfil')
