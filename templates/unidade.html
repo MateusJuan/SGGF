@@ -15,7 +15,7 @@
         <ul>
             <li class="item-menu">
                 <a href="{{ url_for('home') }}">
-                    <img src="{{ url_for('static', filename='img/Logo Desbravadores.png') }}" class="logo">
+                    <img src="{{ url_for('static', filename='img/GUARDIOES.png') }}" class="logo">
                 </a>
             </li>
             <li class="item-menu">
@@ -83,6 +83,7 @@
                 <tr>
                     <th>Nome da Unidade</th>
                     <th>Conselheiro</th>
+                    <th>Detalhes</th>
                 </tr>
             </thead>
             <tbody>
@@ -90,6 +91,14 @@
                     <tr>
                         <td>{{ unidade.nome_unidade }}</td>
                         <td>{{ unidade.conselheiro }}</td>
+                        <td>
+                            <!-- Verificando se o id existe e gerando o link -->
+                            {% if unidade.id %}
+                                <a href="{{ url_for('detalhes_unidade', unidade_id=unidade.id) }}">Ver Detalhes</a>
+                            {% else %}
+                                <span>Sem ID</span>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

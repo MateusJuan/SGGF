@@ -236,13 +236,14 @@ def unidade():
     conselheiros = supabase.table('usuarios').select('id', 'nome').eq('cargo', 'Conselheiro').execute().data
 
     # Consultando todas as unidades e associando o conselheiro de cada uma
-    unidades = supabase.table('unidade').select('nome_unidade', 'membro_id').execute().data
+    unidades = supabase.table('unidade').select('id', 'nome_unidade', 'membro_id').execute().data
     unidades_com_conselheiros = []
 
     for unidade in unidades:
         conselheiro = supabase.table('usuarios').select('nome').eq('id', unidade['membro_id']).execute().data
         if conselheiro:
             unidades_com_conselheiros.append({
+                'id': unidade['id'],  # Adicionando o id da unidade
                 'nome_unidade': unidade['nome_unidade'],
                 'conselheiro': conselheiro[0]['nome']
             })
@@ -272,6 +273,27 @@ def unidade():
 
     return render_template('unidade.html', membros=conselheiros, unidades=unidades_com_conselheiros)
 
+@app.route('/unidade/detalhes/<int:unidade_id>', methods=['GET'])
+def detalhes_unidade(unidade_id):
+    if 'nome' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "warning")
+        return redirect(url_for('login'))
+
+    # Consultando a unidade específica e seus membros
+    unidade = supabase.table('unidade').select('id', 'nome_unidade').eq('id', unidade_id).execute().data
+    if not unidade:
+        flash("Unidade não encontrada.", "danger")
+        return redirect(url_for('unidade'))
+
+    unidade = unidade[0]
+    membros = supabase.table('usuarios').select('id', 'nome', 'unidade').eq('unidade', unidade['nome_unidade']).execute().data
+
+    # Consultando todos os membros
+    todos_membros = supabase.table('usuarios').select('id', 'nome').execute().data
+    membros_na_unidade = [membro['id'] for membro in membros]  # IDs dos membros já na unidade
+    membros_disponiveis = [membro for membro in todos_membros if membro['id'] not in membros_na_unidade]
+
+    return render_template('detalhes_unidade.html', unidade=unidade, membros=membros, membros_disponiveis=membros_disponiveis)
 
 @app.route('/perfil')
 def perfil():
