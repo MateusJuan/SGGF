@@ -58,11 +58,22 @@
         <h2>Detalhes da Unidade: {{ unidade.nome_unidade }}</h2>
 
         <h3>Membros da Unidade</h3>
-        <ul>
-            {% for membro in membros %}
-                <li>{{ membro.nome }}</li>
-            {% endfor %}
-        </ul>
+        <table border="1" class="tabela-unidades">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for membro in membros %}
+                <tr>
+                    <td>
+                        {{ membro.nome }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <h3>Adicionar Membro à Unidade</h3>
         <form action="{{ url_for('detalhes_unidade', unidade_id=unidade.id) }}" method="POST">
