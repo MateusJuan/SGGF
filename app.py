@@ -232,10 +232,11 @@ def unidade():
         flash("Você precisa estar logado para acessar esta página.", "warning")
         return redirect(url_for('login'))
 
-    # Consultando apenas os membros que têm o cargo de "Conselheiro"
+    # Consultando conselheiros e membros disponíveis
     conselheiros = supabase.table('usuarios').select('id', 'nome').eq('cargo', 'Conselheiro').execute().data
+    membros_disponiveis = supabase.table('usuarios').select('id', 'nome').in_('cargo', ['Capitão', 'Secretário', '']).execute().data
 
-    # Consultando todas as unidades e associando o conselheiro de cada uma
+    # Consultando todas as unidades existentes
     unidades = supabase.table('unidade').select('id', 'nome_unidade', 'membro_id').execute().data
     unidades_com_conselheiros = []
 
@@ -243,7 +244,7 @@ def unidade():
         conselheiro = supabase.table('usuarios').select('nome').eq('id', unidade['membro_id']).execute().data
         if conselheiro:
             unidades_com_conselheiros.append({
-                'id': unidade['id'],  # Adicionando o id da unidade
+                'id': unidade['id'],
                 'nome_unidade': unidade['nome_unidade'],
                 'conselheiro': conselheiro[0]['nome']
             })
@@ -251,6 +252,7 @@ def unidade():
     if request.method == 'POST':
         nome_unidade = request.form['nome']
         membro_id = request.form['membro_id']
+        membros_ids = request.form.getlist('membros_ids')  # IDs dos membros adicionais
 
         # Verificar se já existe uma unidade com o mesmo conselheiro
         unidade_existente = supabase.table('unidade').select('*').eq('membro_id', membro_id).execute().data
@@ -259,41 +261,98 @@ def unidade():
             flash("Este conselheiro já está vinculado a uma unidade!", "warning")
         else:
             # Criando a unidade no banco de dados
-            supabase.table('unidade').insert({
+            unidade_response = supabase.table('unidade').insert({
                 "nome_unidade": nome_unidade,
                 "membro_id": membro_id
             }).execute()
 
-            # Atualizando a coluna 'unidade' na tabela usuarios
-            supabase.table('usuarios').update({"unidade": nome_unidade}).eq('id', membro_id).execute()
+            if unidade_response.data:
+                unidade_id = unidade_response.data[0]['id']  # Obter o ID da nova unidade
 
-            flash(f'Unidade "{nome_unidade}" criada com sucesso!', 'success')
+                # Adicionando membros à tabela de relacionamento
+                for usuario_id in membros_ids:
+                    supabase.table('unidade_membros').insert({
+                        "unidade_id": unidade_id,
+                        "usuario_id": usuario_id
+                    }).execute()
 
-        return redirect(url_for('unidade'))
+                flash(f'Unidade "{nome_unidade}" criada com sucesso!', 'success')
+                return redirect(url_for('detalhes_unidade', unidade_id=unidade_id))
+            else:
+                flash("Erro ao criar a unidade.", "error")
 
-    return render_template('unidade.html', membros=conselheiros, unidades=unidades_com_conselheiros)
+    return render_template('unidade.html', conselheiros=conselheiros, unidades=unidades_com_conselheiros, membros_disponiveis=membros_disponiveis)
 
-@app.route('/unidade/detalhes/<int:unidade_id>', methods=['GET'])
+@app.route('/unidade/<int:unidade_id>', methods=['GET', 'POST'])
 def detalhes_unidade(unidade_id):
     if 'nome' not in session:
         flash("Você precisa estar logado para acessar esta página.", "warning")
         return redirect(url_for('login'))
 
-    # Consultando a unidade específica e seus membros
-    unidade = supabase.table('unidade').select('id', 'nome_unidade').eq('id', unidade_id).execute().data
+    # Consultar a unidade pelo ID
+    unidade = supabase.table('unidade').select('*').eq('id', unidade_id).execute().data
+    print("Dados da unidade:", unidade)
+
     if not unidade:
-        flash("Unidade não encontrada.", "danger")
+        flash("Unidade não encontrada.", "error")
         return redirect(url_for('unidade'))
 
-    unidade = unidade[0]
-    membros = supabase.table('usuarios').select('id', 'nome', 'unidade').eq('unidade', unidade['nome_unidade']).execute().data
+    # Consultar os IDs dos membros da unidade
+    membros_unidade_ids = supabase.table('unidade_membros').select('usuario_id').eq('unidade_id', unidade_id).execute().data
+    ids_membros = [membro['usuario_id'] for membro in membros_unidade_ids]
 
-    # Consultando todos os membros
-    todos_membros = supabase.table('usuarios').select('id', 'nome').execute().data
-    membros_na_unidade = [membro['id'] for membro in membros]  # IDs dos membros já na unidade
-    membros_disponiveis = [membro for membro in todos_membros if membro['id'] not in membros_na_unidade]
+    # Consultar os nomes e cargos dos membros usando os IDs
+    membros_unidade = supabase.table('usuarios').select('id', 'nome', 'cargo').in_('id', ids_membros).execute().data
 
-    return render_template('detalhes_unidade.html', unidade=unidade, membros=membros, membros_disponiveis=membros_disponiveis)
+    # Consultar todos os membros disponíveis (Capitão, Secretário e sem cargo)
+    membros_disponiveis = supabase.table('usuarios').select('id', 'nome', 'cargo').in_('cargo', ['Capitão', 'Secretário', '']).execute().data
+
+    # Verificar se o conselheiro_id existe
+    conselheiro_id = unidade[0].get('conselheiro_id')
+    if conselheiro_id:
+        conselheiro = supabase.table('usuarios').select('id', 'nome').eq('id', conselheiro_id).execute().data
+    else:
+        conselheiro = None
+
+    if request.method == 'POST':
+        membro_id = request.form['membro_id']
+        membro_existente = supabase.table('unidade_membros').select('*').eq('unidade_id', unidade_id).eq('usuario_id', membro_id).execute().data
+
+        if membro_existente:
+            flash("Este membro já está na unidade.", "warning")
+        else:
+            supabase.table('unidade_membros').insert({
+                "unidade_id": unidade_id,
+                "usuario_id": membro_id
+            }).execute()
+            flash("Membro adicionado com sucesso!", "success")
+            return redirect(url_for('detalhes_unidade', unidade_id=unidade_id))
+
+    # Organizar os membros por cargo
+    membros_organizados = {
+        'Conselheiro': [],
+        'Capitão': [],
+        'Secretário': [],
+        'Sem Cargo': []
+    }
+
+    if conselheiro:
+        membros_organizados['Conselheiro'].append(conselheiro[0])
+
+    for membro in membros_unidade:
+        cargo = membro['cargo']
+        if cargo in membros_organizados:
+            membros_organizados[cargo].append(membro)
+        else:
+            membros_organizados['Sem Cargo'].append(membro)
+
+    return render_template(
+        'detalhes_unidade.html',
+        unidade=unidade[0],
+        membros_organizados=membros_organizados,
+        membros_disponiveis=membros_disponiveis,
+        conselheiro=conselheiro[0] if conselheiro else None
+    )
 
 @app.route('/perfil')
 def perfil():

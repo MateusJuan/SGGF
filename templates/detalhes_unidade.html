@@ -45,10 +45,8 @@
             </li>
             <li class="item-menu">
                 <a href="{{ url_for('unidade') }}">
-                    <span class="material-symbols-outlined">
-                        groups
-                        </span>
-                        <span class="txt-link">Unidades</span>
+                    <span class="material-symbols-outlined">groups</span>
+                    <span class="txt-link">Unidades</span>
                 </a>
             </li>
         </ul>
@@ -57,36 +55,43 @@
     <div class="conteudo-diretoria">
         <h2>Detalhes da Unidade: {{ unidade.nome_unidade }}</h2>
 
+        <h3>Conselheiro da Unidade</h3>
+        <p>{{ conselheiro.nome if conselheiro else 'Nenhum conselheiro atribuído' }}</p>
+        
         <h3>Membros da Unidade</h3>
         <table border="1" class="tabela-unidades">
             <thead>
                 <tr>
+                    <th>Cargo</th>
                     <th>Nome</th>
                 </tr>
             </thead>
             <tbody>
-                {% for membro in membros %}
-                <tr>
-                    <td>
-                        {{ membro.nome }}
-                    </td>
-                </tr>
+                {% set ordem_cargos = ['Conselheiro', 'Capitão', 'Secretário', 'Sem Cargo'] %}
+                {% for cargo in ordem_cargos %}
+                    {% for membro in membros_organizados[cargo] %}
+                    <tr>
+                        <td>{{ cargo }}</td>
+                        <td>{{ membro.nome }}</td>
+                    </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
-
+        
         <h3>Adicionar Membro à Unidade</h3>
-        <form action="{{ url_for('detalhes_unidade', unidade_id=unidade.id) }}" method="POST">
-            <div class="form-group">
-                <label for="membro_id">Selecione um Membro:</label>
-                <select name="membro_id" id="membro_id" required>
-                    {% for membro in membros_disponiveis %}
-                        <option value="{{ membro.id }}">{{ membro.nome }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="submit">Adicionar Membro</button>
+        <form action="{{ url_for('editar_conselheiro', unidade_id=unidade.id) }}" method="POST">
+            <label for="conselheiro_id">Editar Conselheiro:</label>
+            <select name="conselheiro_id" id="conselheiro_id" required>
+                {% for membro in membros_disponiveis %}
+                    <option value="{{ membro.id }}" {% if conselheiro and membro.id == conselheiro.id %}selected{% endif %}>
+                        {{ membro.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit">Salvar</button>
         </form>
+        
     </div>
 </body>
 </html>
